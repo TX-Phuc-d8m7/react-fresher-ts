@@ -1,0 +1,32 @@
+.register-page {
+    display: flex;
+    justify-content: center; // canh ngang
+    align-items: center; // canh dọc
+    min-height: 100vh; // chiếm full chiều cao
+    background: #f5f7fa; // nền nhẹ
+
+    .container {
+        background: #fff;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px; // giới hạn chiều rộng
+    }
+
+    .heading {
+        text-align: start;
+    }
+
+    .ant-form-item {
+        margin-bottom: 36px;
+    }
+
+    // .ant-btn {
+    //     display: block;
+    //     width: 100%; // nút chiếm full chiều ngang
+    //     border-radius: 6px;
+    //     height: 42px;
+    //     font-weight: 500;
+    // }
+}
