@@ -5,6 +5,7 @@ import { App, Button, Form, Input } from 'antd';
 import "./login.scss";
 import { useNavigate } from 'react-router-dom';
 import { loginAPI } from '@/services/api';
+import { userCurrentApp } from '@/components/context/app.context';
 
 type FieldType = {
   username: string;
@@ -16,17 +17,24 @@ const LoginPage: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const { message, notification } = App.useApp();
   const navigate = useNavigate();
+  const { setIsAuthenticated, setUser } = userCurrentApp();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (value) => {
     setIsSubmit(true);
     try {
       const res = await loginAPI(value.username, value.password);
-
-      if (res.data) {
+      if (res?.data) {
+        setIsAuthenticated(true);
+        setUser(res.data.user);
+        localStorage.setItem('access_token', res.data.access_token);
         message.success("Đăng nhập thành công");
         navigate('/');
       } else {
-        notification.error(res);
+        notification.error({
+          message: 'Có lỗi xảy ra',
+          description: res.message ?? Array.isArray(res.message) ? res.message[0] : res.message,
+          duration: 5,
+        });
       }
     } catch (error: any) {
       console.error(error);
@@ -48,17 +56,16 @@ const LoginPage: React.FC = () => {
             <div className="heading">
               <h2 className="text text-large">Đăng nhập tài khoản</h2>
               <Form
-                name="basic"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-                style={{ maxWidth: 600 }}
+                name="form-login"
+                layout="vertical"
+                style={{ minWidth: 300, margin: "0 auto" }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
               >
                 <Form.Item<FieldType>
-                  label="Username"
+                  label="Email"
                   name="username"
                   rules={[{ required: true, message: 'Please input your username!' }]}
                 >
@@ -66,7 +73,7 @@ const LoginPage: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item<FieldType>
-                  label="Password"
+                  label="Mật khẩu"
                   name="password"
                   rules={[{ required: true, message: 'Please input your password!' }]}
                 >
@@ -75,8 +82,11 @@ const LoginPage: React.FC = () => {
 
                 <Form.Item>
                   <Button type="primary" htmlType="submit" loading={isSubmit}>
-                    Submit
+                    Đăng nhập
                   </Button>
+                  <div className="navigate-option">
+                    Chưa có tài khoản ? <a onClick={() => navigate('/register')} href="">Đăng ký!</a>
+                  </div>
                 </Form.Item>
               </Form>
             </div>

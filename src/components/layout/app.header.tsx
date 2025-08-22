@@ -1,7 +1,11 @@
+import { userCurrentApp } from "components/context/app.context";
+
 const AppHeader = () => {
+
+  const { user } = userCurrentApp();
   return (
     <div className="header">
-      <h1>Header</h1>
+      {JSON.stringify(user)}
     </div>
   );
 };

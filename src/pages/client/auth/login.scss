@@ -3,23 +3,37 @@
     justify-content: center; // canh ngang
     align-items: center; // canh dọc
     min-height: 100vh; // chiếm full chiều cao
-    background: #f5f7fa; // nền nhẹ
+    background: #1264de; // nền nhẹ
 
     .container {
-        background: #fff;
         padding: 32px;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 500px; // giới hạn chiều rộng
+        background: white;
     }
 
     .heading {
         text-align: start;
-        margin-bottom: 20px;
     }
 
     .ant-form-item {
-        margin-bottom: 36px;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+
+    .ant-btn {
+        display: block;
+        width: 100%; // nút chiếm full chiều ngang
+        border-radius: 6px;
+        height: 42px;
+        font-weight: 500;
+    }
+
+    .navigate-option {
+        display: inline-block;
+        text-align: center;
+        margin-top: 10px;
     }
 }

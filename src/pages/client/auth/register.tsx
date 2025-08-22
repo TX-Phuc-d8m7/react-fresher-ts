@@ -52,9 +52,7 @@ const RegisterPage: React.FC = () => {
               <Form
                 name="form-register"
                 layout="vertical"
-                style={{ minWidth: 800, margin: "0 auto" }}
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
+                style={{ minWidth: 300, margin: "0 auto" }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
@@ -99,6 +97,9 @@ const RegisterPage: React.FC = () => {
                   <Button type="primary" htmlType="submit" loading={isSubmit}>
                     Đăng ký
                   </Button>
+                  <div className="navigate-option">
+                    Đã có tài khoản ? <a onClick={() => navigate('/login')} href="">Đăng nhập</a>
+                  </div>
                 </Form.Item>
               </Form>
             </div>

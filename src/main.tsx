@@ -9,8 +9,9 @@ import "styles/global.scss";
 import BookPage from "pages/client/book";
 import AboutPage from "pages/client/about";
 import HomePage from "pages/client/home";
-import CustomRegister from "pages/client/auth/register";
 import { App } from "antd";
+import { AppProvider } from "components/context/app.context";
+import ProtectedRoute from "@/components/auth";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,18 @@ const router = createBrowserRouter([
         path: "/about",
         element: <AboutPage />,
       },
+      {
+        path: "/checkout",
+        element: (
+          <ProtectedRoute>
+            <div>Checkout Page</div>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/admin",
+        element: <div>Admin Page</div>,
+      },
     ],
   },
   {
@@ -45,7 +58,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App>
-      <RouterProvider router={router} />
+      <AppProvider>
+        <RouterProvider router={router} />
+      </AppProvider>
     </App>
   </StrictMode>
 );
