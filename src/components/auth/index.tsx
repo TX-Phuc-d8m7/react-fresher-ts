@@ -9,7 +9,7 @@ const ProtectedRoute = (props: IProps) => {
     if (isAuthenticated === false) {
         return (
             <Result
-                status="404"
+                status="403"
                 title="404"
                 subTitle="Sorry, the page you visited does not exist."
                 extra={<Button type="primary">Back Home</Button>} />
