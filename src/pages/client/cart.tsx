@@ -1,4 +1,4 @@
-const BookPage = () => {
+const CartPage = () => {
     return (
         <div>
             <h1>Cart Page</h1>
@@ -7,4 +7,4 @@ const BookPage = () => {
     );
 };
 
-export default BookPage;
+export default CartPage;
