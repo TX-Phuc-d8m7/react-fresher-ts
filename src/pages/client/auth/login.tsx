@@ -5,7 +5,7 @@ import { App, Button, Form, Input } from 'antd';
 import "./login.scss";
 import { useNavigate } from 'react-router-dom';
 import { loginAPI } from '@/services/api';
-import { userCurrentApp } from '@/components/context/app.context';
+import { useCurrentApp } from '@/components/context/app.context';
 
 type FieldType = {
   username: string;
@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const { message, notification } = App.useApp();
   const navigate = useNavigate();
-  const { setIsAuthenticated, setUser } = userCurrentApp();
+  const { setIsAuthenticated, setUser } = useCurrentApp();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (value) => {
     setIsSubmit(true);
