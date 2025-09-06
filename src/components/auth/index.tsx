@@ -27,8 +27,8 @@ const ProtectedRoute = (props: IProps) => {
                 <Result
                     status="403"
                     title="403"
-                    subTitle="Sorry, you are not authorized to access this page."
-                    extra={<Button type="primary"><Link to="/">Back Home</Link></Button>} />
+                    subTitle="Bạn không có quyền truy cập trang này."
+                    extra={<Button type="primary"><Link to="/">Quay lại trang chủ</Link></Button>} />
             )
         }
     }
