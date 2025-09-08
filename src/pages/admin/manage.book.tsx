@@ -1,7 +1,8 @@
 const ManageBookPage = () => {
     return (
         <div>
-            ManageBookPage
+            <h1>Manage Page</h1>
+            <p>This is the manage page</p>
         </div>
     )
 }
