@@ -1,7 +1,8 @@
 const ManageOrderPage = () => {
     return (
         <div>
-            ManageOrderPage
+            <h1>Manage Order Page</h1>
+            <p>This is the manage order page</p>
         </div>
     )
 }
