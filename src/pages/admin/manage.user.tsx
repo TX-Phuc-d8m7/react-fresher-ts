@@ -3,7 +3,8 @@ import TableUser from "@/components/admin/user/table.user";
 const ManageUserPage = () => {
     return (
         <div>
-            <TableUser />
+            <h1>Manage User Page</h1>
+            <p>This is the manage user page</p>
         </div>
     )
 }
