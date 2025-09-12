@@ -12,10 +12,10 @@ declare global {
         meta: {
             current: number;
             pageSize: number;
-            pages: number;
+            page: number;
             total: number;
         },
-        results: T[]
+        result: T[]
     }
 
     interface ILogin {
@@ -47,5 +47,17 @@ declare global {
     
     interface IFetchAccount {
         user: IUser
+    }
+
+    interface IUserTable {
+        _id: string,
+        email: string,
+        fullName: string,
+        phone: string,
+        role: string,
+        avatar: string,
+        isActive: boolean,
+        createdAt: Date,
+        updatedAt: Date,
     }
 }
