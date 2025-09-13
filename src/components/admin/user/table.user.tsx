@@ -2,71 +2,13 @@ import { getUsersAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { DeleteTwoTone, EditTwoTone, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Space, Tag } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button } from 'antd';
+import Descriptions from 'antd/lib/descriptions';
+import Drawer from 'antd/lib/drawer';
+import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
-
-const columns: ProColumns<IUserTable>[] = [
-    {
-        dataIndex: 'index',
-        valueType: 'indexBorder',
-        width: 48,
-    },
-    {
-        title: 'Id',
-        dataIndex: '_id',
-
-        hideInSearch: true,
-        render(dom, entity, index, action, schema) {
-            return (
-                <a href="#">{entity._id}</a>
-            )
-        }
-    },
-    {
-        title: 'FullName',
-        dataIndex: 'fullName',
-    },
-    {
-        title: 'Email',
-        dataIndex: 'email',
-        copyable: true,
-    },
-    {
-        title: 'Avatar',
-        dataIndex: 'avatar',
-    }, {
-        title: 'Created At',
-        dataIndex: 'createdAt',
-        valueType: 'date',
-        sorter: true,
-        hideInSearch: true
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAtRange',
-        valueType: 'dateRange',
-        hideInTable: true
-    },
-    {
-        title: 'Action',
-        hideInSearch: true,
-        render(dom, entity, index, action, schema) {
-            return (
-                <>
-                    <EditTwoTone
-                        twoToneColor={"#f57800"}
-                        style={{ cursor: "pointer", marginRight: 15 }}
-                    />
-                    <DeleteTwoTone
-                        twoToneColor={"#ff4d4f"}
-                        style={{ cursor: "pointer" }}
-                    />
-                </>
-            )
-        }
-    }
-];
+import DetailUser from './detail.user';
 
 type TSearch = {
     fullName: string,
@@ -83,6 +25,80 @@ const TableUser = () => {
         page: 0,
         total: 0
     });
+
+    // To handle openViewDetail/close Drawer
+    const [openViewDetail, setOpenViewDetail] = useState(false);
+    // Transfer data from Table to Drawer
+    const [dataViewDetail, setdataViewDetail] = useState<IUserTable | null>(null);
+
+    const handleOpenDrawer = (record: IUserTable) => {
+        setdataViewDetail(record);
+        setOpenViewDetail(true);
+    };
+
+    const handleCloseDrawer = () => {
+        setOpenViewDetail(false);
+        setdataViewDetail(null);
+    }
+
+    const columns: ProColumns<IUserTable>[] = [
+        {
+            dataIndex: 'index',
+            valueType: 'indexBorder',
+            width: 48,
+        },
+        {
+            title: 'Id',
+            dataIndex: '_id',
+            hideInSearch: true,
+            render: (_, entity) => (
+                <a onClick={() => handleOpenDrawer(entity)} href='#'>{entity._id}</a>
+            )
+        },
+        {
+            title: 'FullName',
+            dataIndex: 'fullName',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            copyable: true,
+        },
+        {
+            title: 'Avatar',
+            dataIndex: 'avatar',
+        }, {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            valueType: 'date',
+            sorter: true,
+            hideInSearch: true
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAtRange',
+            valueType: 'dateRange',
+            hideInTable: true
+        },
+        {
+            title: 'Action',
+            hideInSearch: true,
+            render(_) {
+                return (
+                    <>
+                        <EditTwoTone
+                            twoToneColor={"#f57800"}
+                            style={{ cursor: "pointer", marginRight: 15 }}
+                        />
+                        <DeleteTwoTone
+                            twoToneColor={"#ff4d4f"}
+                            style={{ cursor: "pointer" }}
+                        />
+                    </>
+                )
+            }
+        }
+    ];
     return (
         <>
             <ProTable<IUserTable, TSearch>
@@ -149,6 +165,13 @@ const TableUser = () => {
                     </Button>
 
                 ]}
+            />
+
+            <DetailUser
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setdataViewDetail}
             />
         </>
     );
