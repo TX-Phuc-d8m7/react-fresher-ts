@@ -1,4 +1,5 @@
 import { FORMATE_DATE_VN } from "@/services/helper";
+import Avatar from "antd/lib/avatar";
 import Badge from "antd/lib/badge";
 import Descriptions from "antd/lib/descriptions";
 import Drawer from "antd/lib/drawer";
@@ -19,6 +20,7 @@ const DetailUser = (props: IProps) => {
         setDataViewDetail(null);
     };
 
+    const avatarURL = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${dataViewDetail?.avatar}`;
     return (
         <>
             <Drawer
@@ -31,12 +33,15 @@ const DetailUser = (props: IProps) => {
             >
                 {dataViewDetail && (
                     <>
-                        <Descriptions title="User Info" layout='vertical' column={2} bordered>
-                            <Descriptions.Item label="Id" span={2}>{dataViewDetail._id}</Descriptions.Item>
+                        <Descriptions title="User Info" layout='vertical' column={1} bordered>
+                            <Descriptions.Item label="Id">{dataViewDetail._id}</Descriptions.Item>
+                            <Descriptions.Item label="Fullname">{dataViewDetail.fullName}</Descriptions.Item>
                             <Descriptions.Item label="Role">
                                 <Badge status="processing" text={dataViewDetail.role} />
                             </Descriptions.Item>
-                            <Descriptions.Item label="Fullname">{dataViewDetail.fullName}</Descriptions.Item>
+                            <Descriptions.Item label="Avatar">
+                                <Avatar size={40} src={avatarURL}></Avatar>
+                            </Descriptions.Item>
                             <Descriptions.Item label="Email">{dataViewDetail.email}</Descriptions.Item>
                             <Descriptions.Item label="Phone">{dataViewDetail.phone}</Descriptions.Item>
                             <Descriptions.Item label="Created At">{dayjs(dataViewDetail.createdAt).format(FORMATE_DATE_VN)}</Descriptions.Item>
