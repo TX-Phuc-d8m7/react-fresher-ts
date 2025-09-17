@@ -1,14 +1,15 @@
-import { getUsersAPI } from '@/services/api';
+import { deleteUserAPI, getUsersAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { App, Button, message, Popconfirm, PopconfirmProps } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
 import ImportUser from './data/import.user';
 import { CSVLink } from 'react-csv';
+import UpdateUser from './update.user';
 
 type TSearch = {
     fullName: string,
@@ -39,12 +40,36 @@ const TableUser = () => {
     const [openModalImport, setOpenModalImport] = useState<boolean>(false);
     const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
 
+    const [isDeleteUser, setIsDeleteUser] = useState<boolean>(false);
+    const { message, notification } = App.useApp();
 
+    const handleUpdateModal = (record: IUserTable) => {
+        setdataViewDetail(record);
+        setOpenModalUpdate(true);
+    };
 
     const handleOpenDrawer = (record: IUserTable) => {
         setdataViewDetail(record);
         setOpenViewDetail(true);
     };
+
+    const handleDeleteUser = async (_id: string) => {
+        try {
+            const response = await deleteUserAPI(_id);
+            if (response && response.data) {
+                message.success("Xóa user thành công!");
+                refreshTable();
+            } else {
+                notification.error({
+                    message: "Xóa user thất bại!",
+                    description: response.message
+                });
+            }
+        } catch (error) {
+            message.error("Xóa user thất bại!");
+        }
+    };
+
 
     const columns: ProColumns<IUserTable>[] = [
         {
@@ -88,18 +113,30 @@ const TableUser = () => {
         {
             title: 'Action',
             hideInSearch: true,
-            render(_) {
+            render(_, entity) {
                 return (
                     <>
                         <EditTwoTone
                             twoToneColor={"#f57800"}
                             style={{ cursor: "pointer", marginRight: 15 }}
-                            onClick={() => setOpenModalUpdate(true)}
+                            onClick={() => handleUpdateModal(entity)}
                         />
-                        <DeleteTwoTone
-                            twoToneColor={"#ff4d4f"}
-                            style={{ cursor: "pointer" }}
-                        />
+
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() => handleDeleteUser(entity._id)}
+                            okText="Xác nhận"
+                            cancelText="Huỷ"
+                            okButtonProps={{ loading: isDeleteUser }}
+                        >
+                            <span style={{ cursor: "pointer", marginLeft: 20 }}>
+                                <DeleteTwoTone
+                                    twoToneColor={"#ff4d4f"}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </span>
+                        </Popconfirm>
                     </>
                 )
             }
@@ -204,6 +241,13 @@ const TableUser = () => {
             <CreateUser
                 openModalCreate={openModalCreate}
                 setOpenModalCreate={setOpenModalCreate}
+                refreshTable={refreshTable}
+            />
+
+            <UpdateUser
+                dataViewDetail={dataViewDetail}
+                openModalUpdate={openModalUpdate}
+                setOpenModalUpdate={setOpenModalUpdate}
                 refreshTable={refreshTable}
             />
 
