@@ -62,7 +62,19 @@ const LayoutAdmin = () => {
         {
             label: <Link to='/admin/book'>Manage Books</Link>,
             key: 'book',
-            icon: <ExceptionOutlined />
+            icon: <ExceptionOutlined />,
+            children: [
+                {
+                    label: <Link to='/admin/book'>CRUD</Link>,
+                    key: 'crud',
+                    icon: <TeamOutlined />,
+                },
+                // {
+                //     label: 'Files1',
+                //     key: 'file1',
+                //     icon: <TeamOutlined />,
+                // }
+            ]
         },
         {
             label: <Link to='/admin/order'>Manage Orders</Link>,

@@ -58,3 +58,36 @@ export const deleteUserAPI = (_id: string) => {
     const urlBackend = `/api/v1/user/${_id}`;
     return axios.delete<IBackendRes<IRegister>>(urlBackend);
 }
+
+
+/// Module Books
+export const getBooksAPI = (query: string) => {
+    const urlBackend = `/api/v1/book?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackend);
+}
+
+export const createBookAPI = (thumbnail: string, slider: string[], mainText: string, author: string, price: number, quantity: number, category: string) => {
+    const urlBackend = "/api/v1/book";
+    return axios.post<IBackendRes<IRegister>>(urlBackend, {thumbnail, slider, mainText, author, price, quantity, category})
+}
+
+export const getCategory = () => {
+    const urlBackend = "/api/v1/database/category";
+    return axios.get<IBackendRes<string[]>>(urlBackend);
+}
+
+export const uploadFileAPI = (fileImg: any, folder: string) => {
+    const bodyFormData = new FormData();
+    bodyFormData.append('fileImg', fileImg);
+    return axios<IBackendRes<{
+        fileUploaded: string
+    }>>({
+        method: 'post',
+        url: `/api/v1/file/upload`,
+        data: bodyFormData,
+        headers: {
+            "Content-Type": "multipart/form-data",
+            "upload-type": folder
+        },
+    });
+}
