@@ -1,4 +1,4 @@
-import { createBookAPI, getCategory, uploadFileAPI } from "@/services/api";
+import { updateBookAPI, getCategory, uploadFileAPI } from "@/services/api";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Divider, Form, FormProps, GetProp, Input, InputNumber, InputNumberProps, message, Modal, Select, Upload, UploadFile, UploadProps } from "antd";
@@ -6,14 +6,18 @@ import { UploadChangeParam } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { stat } from "fs";
+import { v4 as uuidv4 } from 'uuid';
+
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 type UserUploadType = "thumbnail" | "slider";
 
 interface IProps {
-    openModalCreate: boolean;
-    setOpenModalCreate: (v: boolean) => void;
+    dataViewDetail: IBookTable | null;
+    setDataViewDetail: (v: IBookTable | null) => void;
+    openModalUpdate: boolean;
+    setOpenModalUpdate: (v: boolean) => void;
     refreshTable: () => void;
 }
 
@@ -23,6 +27,7 @@ interface IOption {
 }
 
 type FieldType = {
+    _id: string;
     thumbnail: any;
     slider: any;
     mainText: string;
@@ -32,8 +37,8 @@ type FieldType = {
     category: string;
 }
 
-const CreateBook = (props: IProps) => {
-    const { openModalCreate, setOpenModalCreate, refreshTable } = props;
+const UpdateBook = (props: IProps) => {
+    const { dataViewDetail, setDataViewDetail, openModalUpdate, setOpenModalUpdate, refreshTable } = props;
     const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const { message, notification } = App.useApp();
     const [form] = Form.useForm();
@@ -59,11 +64,12 @@ const CreateBook = (props: IProps) => {
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (value) => {
         setIsSubmit(true);
-        const { mainText, author, price, quantity, category } = value;
+        const { _id, mainText, author, price, quantity, category } = value;
         const thumbnail = fileListThumbnail?.[0]?.name ?? "";
         const slider = fileListSlider?.map(item => item.name) ?? [];
 
-        const res = await createBookAPI(
+        const res = await updateBookAPI(
+            _id,
             thumbnail,
             slider,
             mainText,
@@ -73,11 +79,12 @@ const CreateBook = (props: IProps) => {
             category,
         )
         if (res && res.data) {
-            message.success("Tạo mới book thành công");
+            message.success("Cập nhật book thành công");
             form.resetFields();
             setFileListSlider([]);
             setFileListThumbnail([]);
-            setOpenModalCreate(false);
+            setDataViewDetail(null);
+            setOpenModalUpdate(false);
             refreshTable();
         } else {
             notification.error({
@@ -127,6 +134,42 @@ const CreateBook = (props: IProps) => {
         }
         fetchCategories();
     }, []);
+
+    useEffect(() => {
+        if (dataViewDetail) {
+            const arrThumbnail = [
+                {
+                    uid: uuidv4(),
+                    name: dataViewDetail.thumbnail,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${dataViewDetail.thumbnail}`
+                }
+            ]
+
+            const arrSlider = dataViewDetail?.slider?.map(item => {
+                return {
+                    uid: uuidv4(),
+                    name: item,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`
+                }
+            })
+
+            form.setFieldsValue({
+                _id: dataViewDetail?._id,
+                thumbnail: dataViewDetail?.thumbnail,
+                slider: dataViewDetail?.slider,
+                mainText: dataViewDetail?.mainText,
+                author: dataViewDetail?.author,
+                price: dataViewDetail?.price,
+                quantity: dataViewDetail?.quantity,
+                category: dataViewDetail?.category,
+            });
+
+            setFileListThumbnail(arrThumbnail as any);
+            setFileListSlider(arrSlider as any);
+        }
+    }, [dataViewDetail]);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
@@ -194,25 +237,26 @@ const CreateBook = (props: IProps) => {
         if (Array.isArray(e)) {
             return e;
         }
-        return e?.fileList;
+        return e?.fileList || [];
     };
 
     return (
         <>
             <Modal
-                title="Thêm sách mới"
-                open={openModalCreate}
+                title="Cập nhật thông tin sách"
+                open={openModalUpdate}
                 onOk={() => { form.submit(); }}
                 onCancel={() => {
                     form.resetFields();
                     setFileListSlider([]);
                     setFileListThumbnail([]);
-                    setOpenModalCreate(false);
+                    setDataViewDetail(null);
+                    setOpenModalUpdate(false);
 
                 }}
                 destroyOnClose={true}
                 okButtonProps={{ loading: isSubmit }}
-                okText="Tạo mới"
+                okText="Cập nhật"
                 cancelText="Huỷ"
                 confirmLoading={isSubmit}
                 maskClosable={false}
@@ -228,6 +272,14 @@ const CreateBook = (props: IProps) => {
                     onFinish={onFinish}
                     autoComplete="off"
                 >
+                    <Form.Item<FieldType>
+                        label="_id"
+                        name="_id"
+                        hidden
+                    >
+                        <Input />
+                    </Form.Item>
+
                     <Form.Item<FieldType>
                         label="Tên sách"
                         name="mainText"
@@ -279,8 +331,8 @@ const CreateBook = (props: IProps) => {
                         name="thumbnail"
                         rules={[{ required: true, message: 'Thumbnail không được để trống!' }]}
 
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
+                    // valuePropName="fileList"
+                    // getValueFromEvent={normFile}
                     >
                         <Upload
                             name="avatar"
@@ -293,7 +345,7 @@ const CreateBook = (props: IProps) => {
                             onChange={(info) => handleChange(info, "thumbnail")}
                             onPreview={handlePreview}
                             onRemove={(file) => handleRemove(file, "thumbnail")}
-                            fileList={fileListThumbnail}
+                            fileList={fileListThumbnail ?? []}
                         >
                             <div>
                                 {loadingThumbnail ? <LoadingOutlined /> : <PlusOutlined />}
@@ -307,8 +359,8 @@ const CreateBook = (props: IProps) => {
                         name="slider"
                         rules={[{ required: true, message: 'Slider không được để trống!' }]}
 
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
+                    // valuePropName="fileList"
+                    // getValueFromEvent={normFile}
                     >
                         <Upload
                             listType="picture-card"
@@ -319,7 +371,7 @@ const CreateBook = (props: IProps) => {
                             onChange={(info) => handleChange(info, "slider")}
                             onPreview={handlePreview}
                             onRemove={(file) => handleRemove(file, "slider")}
-                            fileList={fileListSlider}
+                            fileList={fileListSlider ?? []}
                         >
                             <div>
                                 {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
@@ -334,4 +386,4 @@ const CreateBook = (props: IProps) => {
 }
 
 
-export default CreateBook
+export default UpdateBook

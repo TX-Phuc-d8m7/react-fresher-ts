@@ -1,13 +1,14 @@
-import { getBooksAPI } from '@/services/api';
+import { deleteBookAPI, getBooksAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Popconfirm } from 'antd';
+import { Button, message, notification, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import DetailBook from './detail.book';
 import CreateBook from './create.book';
+import UpdateBook from './update.book';
 
 
 type TSearch = {
@@ -53,22 +54,22 @@ const TableBook = () => {
         setOpenViewDetail(true);
     };
 
-    // const handleDeleteUser = async (_id: string) => {
-    //     try {
-    //         const response = await deleteUserAPI(_id);
-    //         if (response && response.data) {
-    //             message.success("Xóa user thành công!");
-    //             refreshTable();
-    //         } else {
-    //             notification.error({
-    //                 message: "Xóa user thất bại!",
-    //                 description: response.message
-    //             });
-    //         }
-    //     } catch (error) {
-    //         message.error("Xóa user thất bại!");
-    //     }
-    // };
+    const handleDeleteBook = async (_id: string) => {
+        try {
+            const response = await deleteBookAPI(_id);
+            if (response && response.data) {
+                message.success("Xóa book thành công!");
+                refreshTable();
+            } else {
+                notification.error({
+                    message: "Xóa book thất bại!",
+                    description: response.message
+                });
+            }
+        } catch (error) {
+            message.error("Xóa user thất bại!");
+        }
+    };
 
 
     const columns: ProColumns<IBookTable>[] = [
@@ -147,7 +148,7 @@ const TableBook = () => {
                         <Popconfirm
                             title="Delete the task"
                             description="Are you sure to delete this task?"
-                            // onConfirm={() => handleDeleteUser(entity._id)}
+                            onConfirm={() => handleDeleteBook(entity._id)}
                             okText="Xác nhận"
                             cancelText="Huỷ"
                             okButtonProps={{ loading: isDeleteUser }}
@@ -238,15 +239,9 @@ const TableBook = () => {
                     >
                         <CSVLink
                             data={currentDataTable}
-                            filename="export-user.csv">
+                            filename="export-book.csv">
                             Export
                         </CSVLink>
-                    </Button>,
-
-                    <Button icon={<CloudUploadOutlined />}
-                        onClick={() => setOpenModalImport(true)}
-                        type="primary"
-                    >Import
                     </Button>,
 
                     <Button
@@ -273,14 +268,15 @@ const TableBook = () => {
                 refreshTable={refreshTable}
             />
 
-            {/* <UpdateUser
+            <UpdateBook
                 dataViewDetail={dataViewDetail}
+                setDataViewDetail={setdataViewDetail}
                 openModalUpdate={openModalUpdate}
                 setOpenModalUpdate={setOpenModalUpdate}
                 refreshTable={refreshTable}
             />
 
-            <ImportUser
+            {/* <ImportUser
                 openModelImport={openModalImport}
                 setOpenModelImport={setOpenModalImport}
                 refreshTable={refreshTable}

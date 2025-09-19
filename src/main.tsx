@@ -20,7 +20,6 @@ import ManageOrderPage from 'pages/admin/manage.order';
 import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import enUS from 'antd/es/locale/en_US';
-import viVN from 'antd/locale/vi_VN';
 
 
 const router = createBrowserRouter([
